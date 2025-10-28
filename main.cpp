@@ -114,6 +114,13 @@ int buildEncodingTree(int nextFree) {
         }
     }
 
+    while (heap->size > 1) {
+        heap->pop(weightArr);
+        heap->pop(weightArr);
+        heap->push(heap->size, weightArr);
+
+    }
+
     return -1; // placeholder
 }
 
