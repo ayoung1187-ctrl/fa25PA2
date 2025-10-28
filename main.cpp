@@ -63,6 +63,7 @@ void buildFrequencyTable(int freq[], const string& filename) {
             ch = ch - 'A' + 'a';
 
         // Count only lowercase letters
+        // NOTE: counts via placement of alphabet in array
         if (ch >= 'a' && ch <= 'z')
             freq[ch - 'a']++;
     }
@@ -74,6 +75,12 @@ void buildFrequencyTable(int freq[], const string& filename) {
 // Step 2: Create leaf nodes for each character
 int createLeafNodes(int freq[]) {
     int nextFree = 0;
+    // NOTE: 26 is used since that's the count of each letter in alphabet. Will only count unique letters
+    // So if you had cara, c is at index 2, a at 0, and r at 17.
+    // charArr = {97, 99, 114}
+    // weightArr = {1, 2, 1}
+    // leftArr = {-1, -1, -1}
+    // rightArr = {-1, -1, -1}
     for (int i = 0; i < 26; ++i) {
         if (freq[i] > 0) {
             charArr[nextFree] = 'a' + i;
@@ -98,6 +105,15 @@ int buildEncodingTree(int nextFree) {
     //    - Set left/right pointers
     //    - Push new parent index back into the heap
     // 4. Return the index of the last remaining node (root)
+    MinHeap *heap = new MinHeap();
+
+    // For pushing, least frequent should be root (header should handle this)
+    for (int i = 0; i < 26; ++i) {
+        if (weightArr[i] > 0) {
+            heap->push(i, weightArr);
+        }
+    }
+
     return -1; // placeholder
 }
 
