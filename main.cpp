@@ -77,8 +77,8 @@ int createLeafNodes(int freq[]) {
     int nextFree = 0;
     // NOTE: 26 is used since that's the count of each letter in alphabet. Will only count unique letters
     // So if you had cara, c is at index 2, a at 0, and r at 17.
-    // charArr = {97, 99, 114}
-    // weightArr = {1, 2, 1}
+    // charArr = {a, c, r} <- stores characters, not ints oops
+    // weightArr = {2, 1, 1}
     // leftArr = {-1, -1, -1}
     // rightArr = {-1, -1, -1}
     for (int i = 0; i < 26; ++i) {
@@ -114,14 +114,27 @@ int buildEncodingTree(int nextFree) {
         }
     }
 
-    while (heap->size > 1) {
-        heap->pop(weightArr);
-        heap->pop(weightArr);
-        heap->push(heap->size, weightArr);
+    int cmbWgt = 0;
 
+    while (heap->size > 1) { //FIXME
+        cout<<"Size: "<<heap->size<<endl;
+        cmbWgt += heap->pop(weightArr);
+        cout<<"got here"<<endl;
+        cmbWgt += heap->pop(weightArr);
+        cout<<"got here 2"<<endl;
+        weightArr[nextFree] = cmbWgt;
+        cout<<"got here 3"<<endl;
+        leftArr[nextFree] = -1;
+        cout<<"got here 4"<<endl;
+        rightArr[nextFree] = -1;
+        cout<<"got here 5"<<endl;
+        heap->push(nextFree, weightArr);
+        cout<<"got here 6"<<endl;
+        nextFree++;
     }
 
-    return -1; // placeholder
+    cout << "Root is: " << heap->data[0] << "\n";
+    return heap->data[0];
 }
 
 // Step 4: Use an STL stack to generate codes
