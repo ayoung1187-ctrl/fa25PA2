@@ -16,12 +16,16 @@ struct MinHeap {
     int data[64];
     int size;
 
+    // NOTE: everything in here should work now. I tested push, upheap, pop, and downheap and they all returned accurate responses
+
     MinHeap() { size = 0; }
 
     void push(int idx, int weightArr[]) {
         // TODO: insert index at end of heap, restore order using upheap()
         // Minheap will store indices and upheap will compare using weightArr
+        //cout << "Entered push" << endl;
         data[size] = idx;
+        //cout << "data[" << size<< "]=" << idx << endl;
         upheap(size, weightArr);
         size++;
     }
@@ -29,13 +33,17 @@ struct MinHeap {
     int pop(int weightArr[]) {
         // TODO: remove and return smallest index
         // Case 1: heap is empty
-        if (size == 0) {
+        if (size <= 0) {
             return -1;
         }
         // Case 2: else
         int holder = data[0];
-        swap(data[0], data[--size]);
-        downheap(0, weightArr);
+        size--;
+        if (size > 0) {
+            //cout << "Swapping " << data[0] << " and " << data[size] << endl;
+            swap(data[0], data[size]);
+            downheap(0, weightArr);
+        }
         return holder;
     }
 
@@ -65,13 +73,17 @@ struct MinHeap {
             int right = 2 * pos + 2;
             int toSwap = pos;
 
+            cout << weightArr[data[left]] << " < " << weightArr[data[toSwap]] << endl;
             // If left child exists and its weight is smaller
-            if (left < size && weightArr[left] < weightArr[toSwap]) {
+            if (left < size && weightArr[data[left]] < weightArr[data[toSwap]]) {
+                cout << "Passed into left" << endl;
                 toSwap = left;
             }
 
+            cout << weightArr[data[right]] << " < " << weightArr[data[toSwap]] << endl;
             // If right child exists and its weight is smaller
-            if (right < size && weightArr[right] < weightArr[toSwap]) {
+            if (right < size && weightArr[data[right]] < weightArr[data[toSwap]]) {
+                cout << "Passed into right" << endl;
                 toSwap = right;
             }
 
@@ -80,6 +92,7 @@ struct MinHeap {
                 return;
             }
 
+            cout << "Swapping " << data[pos] << " and " << data[toSwap] << endl;
             swap(data[pos], data[toSwap]);
             pos = toSwap;
         }

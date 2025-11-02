@@ -114,22 +114,35 @@ int buildEncodingTree(int nextFree) {
         }
     }
 
-    int cmbWgt = 0;
+    // Check tree
+    /*for (int i = 0; i < heap->size; i++) {
+        cout << heap->data[i] << " ";
+    }
+    cout << endl;
+    cout << "For Cybersecurity, should output: 0 3 5 7 4 2 6 1 8" << endl;*/
+
+    /*for (int i = 0; i < heap->size; ++i) {
+        cout << i << " has a frequency of " << weightArr[i] << endl;
+    }*/
 
     while (heap->size > 1) { //FIXME
+        int cmbWgt = 0;
         cout<<"Size: "<<heap->size<<endl;
-        cmbWgt += heap->pop(weightArr);
-        cout<<"got here"<<endl;
-        cmbWgt += heap->pop(weightArr);
-        cout<<"got here 2"<<endl;
+        cmbWgt += weightArr[heap->pop(weightArr)];
+        cmbWgt += weightArr[heap->pop(weightArr)];
+        cout << "cmbWgt = " << cmbWgt << endl;
         weightArr[nextFree] = cmbWgt;
-        cout<<"got here 3"<<endl;
         leftArr[nextFree] = -1;
-        cout<<"got here 4"<<endl;
         rightArr[nextFree] = -1;
-        cout<<"got here 5"<<endl;
-        heap->push(nextFree, weightArr);
-        cout<<"got here 6"<<endl;
+
+        // Check tree
+        cout << "Tree check: ";
+        for (int i = 0; i < heap->size; i++) {
+            cout << heap->data[i] << " ";
+        }
+        cout << endl;
+
+        //heap->push(nextFree, weightArr);
         nextFree++;
     }
 
