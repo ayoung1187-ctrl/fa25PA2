@@ -73,17 +73,17 @@ struct MinHeap {
             int right = 2 * pos + 2;
             int toSwap = pos;
 
-            cout << weightArr[data[left]] << " < " << weightArr[data[toSwap]] << endl;
+            //cout << weightArr[data[left]] << " < " << weightArr[data[toSwap]] << endl;
             // If left child exists and its weight is smaller
             if (left < size && weightArr[data[left]] < weightArr[data[toSwap]]) {
-                cout << "Passed into left" << endl;
+                //cout << "Passed into left" << endl;
                 toSwap = left;
             }
 
-            cout << weightArr[data[right]] << " < " << weightArr[data[toSwap]] << endl;
+            //cout << weightArr[data[right]] << " < " << weightArr[data[toSwap]] << endl;
             // If right child exists and its weight is smaller
             if (right < size && weightArr[data[right]] < weightArr[data[toSwap]]) {
-                cout << "Passed into right" << endl;
+                //cout << "Passed into right" << endl;
                 toSwap = right;
             }
 
@@ -92,7 +92,7 @@ struct MinHeap {
                 return;
             }
 
-            cout << "Swapping " << data[pos] << " and " << data[toSwap] << endl;
+            //cout << "Swapping " << data[pos] << " and " << data[toSwap] << endl;
             swap(data[pos], data[toSwap]);
             pos = toSwap;
         }

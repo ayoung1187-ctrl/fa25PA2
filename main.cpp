@@ -5,6 +5,8 @@
 #include <fstream>
 #include <stack>
 #include <string>
+#include <vector>
+
 #include "heap.h"
 using namespace std;
 
@@ -125,28 +127,37 @@ int buildEncodingTree(int nextFree) {
         cout << i << " has a frequency of " << weightArr[i] << endl;
     }*/
 
-    while (heap->size > 1) { //FIXME
+    while (heap->size > 1) {
         int cmbWgt = 0;
-        cout<<"Size: "<<heap->size<<endl;
-        cmbWgt += weightArr[heap->pop(weightArr)];
-        cmbWgt += weightArr[heap->pop(weightArr)];
+        //cout<<"Size: "<<heap->size<<endl;
+
+        int right = weightArr[heap->pop(weightArr)];
+        int left = weightArr[heap->pop(weightArr)];
+
+        cmbWgt += left + right;
         cout << "cmbWgt = " << cmbWgt << endl;
+        cout << "left = " << left << endl;
+        cout << "right = " << right << endl;
+
+        // Add cmbWgt to end of list
         weightArr[nextFree] = cmbWgt;
-        leftArr[nextFree] = -1;
-        rightArr[nextFree] = -1;
+        leftArr[nextFree] = left;
+        rightArr[nextFree] = right;
+
+        // Push
+        heap->push(nextFree, weightArr);
 
         // Check tree
-        cout << "Tree check: ";
+        /*cout << "Tree check: ";
         for (int i = 0; i < heap->size; i++) {
             cout << heap->data[i] << " ";
         }
-        cout << endl;
+        cout << endl;*/
 
-        //heap->push(nextFree, weightArr);
         nextFree++;
     }
 
-    cout << "Root is: " << heap->data[0] << "\n";
+    cout << "Root index is: " << heap->data[0] << endl;
     return heap->data[0];
 }
 
@@ -156,6 +167,55 @@ void generateCodes(int root, string codes[]) {
     // Use stack<pair<int, string>> to simulate DFS traversal.
     // Left edge adds '0', right edge adds '1'.
     // Record code when a leaf node is reached.
+    bool traversed[MAX_NODES] = {false};
+
+
+    // Traverse via frequency
+
+    stack<pair<int, string>> st;
+    st.push({root, ""});
+
+    for (int i = 0; i < 5; i++) {
+        cout << charArr[i] << " ";
+    }
+    cout << endl;
+    for (int i = 0; i < 5; i++) {
+        cout << weightArr[i] << " ";
+    }
+    cout << endl;
+    for (int i = 0; i < 5; i++) {
+        cout << leftArr[i] << " ";
+    }
+    cout << endl;
+    for (int i = 0; i < 5; i++) {
+        cout << rightArr[i] << " ";
+    }
+    cout << endl;
+
+    while (!st.empty()) {
+        pair<int, string> p = st.top();
+        cout << "Index: " << p.first << " string: " << p.second << endl;
+        cout << "left: " << leftArr[p.first] << " and right: " << rightArr[p.first] << endl;
+        st.pop();
+
+        if (traversed[p.first] == true) {
+            continue;
+        }
+
+        traversed[p.first] = true;
+
+        if (leftArr[p.first] == -1 && rightArr[p.first] == -1) {
+            codes[p.first] = p.second;
+            st.push({p.first, ""});
+            continue;
+        }
+        if (rightArr[p.first] != -1) {
+            st.push({rightArr[p.first], p.second + "1"});
+        }
+        else {
+            st.push({leftArr[p.first], p.second + "0"});
+        }
+    }
 }
 
 // Step 5: Print table and encoded message
