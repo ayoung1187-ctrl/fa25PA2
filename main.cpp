@@ -5,7 +5,6 @@
 #include <fstream>
 #include <stack>
 #include <string>
-#include <vector>
 
 #include "heap.h"
 using namespace std;
