@@ -102,6 +102,11 @@ int buildEncodingTree(int nextFree) {
         }
     }
 
+    // Single character case, where 0 will be returned since weightArr contains one element
+    if (heap->size == 1) {
+        return heap->data[0];
+    }
+
     // Build encoding tree: adds to weightArr, leftArr, and rightArr while popping from minheap
     while (heap->size > 1) {
         // Set left and right equal to popped indexes, then add their weights to cmbwgt
@@ -130,6 +135,32 @@ void generateCodes(int root, string codes[]) {
     // Declare stack object and push root node into it, with alterable string
     stack<pair<int, string>> st;
     st.push({root, ""});
+
+    // Single character handling, where '0' is automatically assigned
+    if (root == 0) {
+        st.pop();
+        codes[charArr[root] - 'a'] = "0";
+    }
+
+    // Below are print tests to visualize the binary tree being created
+
+    /*int k = 10;
+      for (int i = 0; i < k; ++i) {
+        cout << charArr[i] << ", ";
+    }
+    cout << endl;
+    for (int i = 0; i < k; ++i) {
+        cout << "Index " << i << ": " <<weightArr[i] << ", ";
+    }
+    cout << endl;
+    for (int i = 0; i < k; ++i) {
+        cout << "Index " << i << ": " << leftArr[i] << ", ";
+    }
+    cout << endl;
+    for (int i = 0; i < k; ++i) {
+        cout << "Index " << i << ": " << rightArr[i] << ", ";
+    }
+    cout << endl;*/
 
     // DFS traversal: Going left adds 0 to string, going right adds 1
     while (!st.empty()) {
