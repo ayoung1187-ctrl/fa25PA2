@@ -65,7 +65,6 @@ void buildFrequencyTable(int freq[], const string& filename) {
             ch = ch - 'A' + 'a';
 
         // Count only lowercase letters
-        // NOTE: counts via placement of alphabet in array
         if (ch >= 'a' && ch <= 'z')
             freq[ch - 'a']++;
     }
@@ -77,12 +76,6 @@ void buildFrequencyTable(int freq[], const string& filename) {
 // Step 2: Create leaf nodes for each character
 int createLeafNodes(int freq[]) {
     int nextFree = 0;
-    // NOTE: 26 is used since that's the count of each letter in alphabet. Will only count unique letters
-    // So if you had cara, c is at index 2, a at 0, and r at 17.
-    // charArr = {a, c, r} <- stores characters, not ints oops
-    // weightArr = {2, 1, 1}
-    // leftArr = {-1, -1, -1}
-    // rightArr = {-1, -1, -1}
     for (int i = 0; i < 26; ++i) {
         if (freq[i] > 0) {
             charArr[nextFree] = 'a' + i;
@@ -98,61 +91,32 @@ int createLeafNodes(int freq[]) {
 
 // Step 3: Build the encoding tree using heap operations
 int buildEncodingTree(int nextFree) {
-    // TODO:
-    // 1. Create a MinHeap object.
-    // 2. Push all leaf node indices into the heap.
-    // 3. While the heap size is greater than 1:
-    //    - Pop two smallest nodes
-    //    - Create a new parent node with combined weight
-    //    - Set left/right pointers
-    //    - Push new parent index back into the heap
-    // 4. Return the index of the last remaining node (root)
+    // Create minheap object
     MinHeap *heap = new MinHeap();
 
-    // For pushing, least frequent should be root (header should handle this)
+    // Push all indexes with an associated weight > 0 into minheap (the least frequent being the root)
     for (int i = 0; i < 26; ++i) {
         if (weightArr[i] > 0) {
             heap->push(i, weightArr);
         }
     }
 
-    // Check tree
-    /*for (int i = 0; i < heap->size; i++) {
-        cout << heap->data[i] << " ";
-    }
-    cout << endl;
-    cout << "For Cybersecurity, should output: 0 3 5 7 4 2 6 1 8" << endl;*/
-
-    /*for (int i = 0; i < heap->size; ++i) {
-        cout << i << " has a frequency of " << weightArr[i] << endl;
-    }*/
-
+    // Build encoding tree: adds to weightArr, leftArr, and rightArr while popping from minheap
     while (heap->size > 1) {
+        // Set left and right equal to popped indexes, then add their weights to cmbwgt
         int cmbWgt = 0;
-        //cout<<"Size: "<<heap->size<<endl;
+        int left = heap->pop(weightArr);
+        int right = heap->pop(weightArr);
 
-        int right = weightArr[heap->pop(weightArr)];
-        int left = weightArr[heap->pop(weightArr)];
+        cmbWgt += weightArr[left] + weightArr[right];
 
-        cmbWgt += left + right;
-        cout << "cmbWgt = " << cmbWgt << endl;
-        cout << "left = " << left << endl;
-        cout << "right = " << right << endl;
-
-        // Add cmbWgt to end of list
+        // Add cmbWgt to end of weightArr and set pointers to end of left and right
         weightArr[nextFree] = cmbWgt;
         leftArr[nextFree] = left;
         rightArr[nextFree] = right;
 
-        // Push
+        // Push parent back into minheap
         heap->push(nextFree, weightArr);
-
-        // Check tree
-        /*cout << "Tree check: ";
-        for (int i = 0; i < heap->size; i++) {
-            cout << heap->data[i] << " ";
-        }
-        cout << endl;*/
 
         nextFree++;
     }
@@ -167,54 +131,90 @@ void generateCodes(int root, string codes[]) {
     // Use stack<pair<int, string>> to simulate DFS traversal.
     // Left edge adds '0', right edge adds '1'.
     // Record code when a leaf node is reached.
-    bool traversed[MAX_NODES] = {false};
 
-
-    // Traverse via frequency
-
+    // Declare stack object and push root node into it, with alterable string
     stack<pair<int, string>> st;
     st.push({root, ""});
 
-    for (int i = 0; i < 5; i++) {
+    int k = 11;
+    cout << "charArr[]: ";
+    for (int i = 0; i < k; i++) {
         cout << charArr[i] << " ";
     }
-    cout << endl;
-    for (int i = 0; i < 5; i++) {
+    cout << "\nweightArr[]: ";
+    for (int i = 0; i < k; i++) {
         cout << weightArr[i] << " ";
     }
-    cout << endl;
-    for (int i = 0; i < 5; i++) {
+    cout << "\nleftArr[]: ";
+    for (int i = 0; i < k; i++) {
         cout << leftArr[i] << " ";
     }
-    cout << endl;
-    for (int i = 0; i < 5; i++) {
+    cout << "\nrightArr[]: ";
+    for (int i = 0; i < k; i++) {
         cout << rightArr[i] << " ";
     }
     cout << endl;
 
     while (!st.empty()) {
-        pair<int, string> p = st.top();
-        cout << "Index: " << p.first << " string: " << p.second << endl;
-        cout << "left: " << leftArr[p.first] << " and right: " << rightArr[p.first] << endl;
+        pair<int, string> node = st.top();
+        //cout << "STACK --> Index: " << node.first << " string: " << node.second << endl;
+        //cout << "left: " << weightArr[leftArr[node.first]] << " at index: " << leftArr[node.first] << "; and right: "
+            //<< weightArr[rightArr[node.first]] << " at index: " << rightArr[node.first] << endl;
+        //cout << endl;
+        //cout << "Traversed: " << traversed[node.first] << endl;
         st.pop();
 
-        if (traversed[p.first] == true) {
+        if (leftArr[node.first] == -1 && rightArr[node.first] == -1) {
+            codes[charArr[node.first] - 'a'] = node.second;
+            continue;
+        }
+        if (rightArr[node.first] != -1) {
+            st.push({rightArr[node.first], node.second + "1"});
+        }
+        if (leftArr[node.first] != -1) {
+            st.push({leftArr[node.first], node.second + "0"});
+        }
+
+
+        /*if (traversed[node.first]) {
+            if (node.first > 0) {
+                st.push({--node.first, ""});
+                continue;
+            }
             continue;
         }
 
-        traversed[p.first] = true;
+        traversed[node.first] = true;
 
-        if (leftArr[p.first] == -1 && rightArr[p.first] == -1) {
-            codes[p.first] = p.second;
-            st.push({p.first, ""});
+        int i = 0;
+        int j = root;
+
+        // If approached leaf, end
+        if (leftArr[node.first] == -1 && rightArr[node.first] == -1) {
+            // Assign to index containing correct letter
+            int holder = charArr[node.first];
+            codes[holder - 'a'] = node.second;
+
+            st.push({root, ""});
             continue;
         }
-        if (rightArr[p.first] != -1) {
-            st.push({rightArr[p.first], p.second + "1"});
+
+        //else, if not traversed to left or right
+        if (rightArr[node.first] != -1) {
+            //st.push({rightArr[node.first], node.second + "0"}); //needs to be 3 ... the index of the wanted character at weightArr...
+            // ... so rightArr[node.first] == weightArr[3], and we want that index... basically, from right we want to find it in weightArr
+            while (rightArr[node.first] != weightArr[j]) {
+                j--;
+                //cout<< j <<endl;
+            }
+            st.push({j, node.second + "1"});
         }
         else {
-            st.push({leftArr[p.first], p.second + "0"});
-        }
+            while (leftArr[node.first] != weightArr[i]) {
+                i++;
+            }
+            st.push({i, node.second + "0"}); // needs to be 0
+        }*/
     }
 }
 
