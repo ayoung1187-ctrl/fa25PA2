@@ -70,7 +70,8 @@ void buildFrequencyTable(int freq[], const string& filename) {
     }
     file.close();
 
-    cout << "Frequency table built successfully.\n";
+    // Commented out for output format
+    //cout << "Frequency table built successfully.\n";
 }
 
 // Step 2: Create leaf nodes for each character
@@ -85,7 +86,8 @@ int createLeafNodes(int freq[]) {
             nextFree++;
         }
     }
-    cout << "Created " << nextFree << " leaf nodes.\n";
+    // Commented out for output format
+    //cout << "Created " << nextFree << " leaf nodes.\n";
     return nextFree;
 }
 
@@ -121,100 +123,34 @@ int buildEncodingTree(int nextFree) {
         nextFree++;
     }
 
-    cout << "Root index is: " << heap->data[0] << endl;
     return heap->data[0];
 }
 
 // Step 4: Use an STL stack to generate codes
 void generateCodes(int root, string codes[]) {
-    // TODO:
-    // Use stack<pair<int, string>> to simulate DFS traversal.
-    // Left edge adds '0', right edge adds '1'.
-    // Record code when a leaf node is reached.
-
     // Declare stack object and push root node into it, with alterable string
     stack<pair<int, string>> st;
     st.push({root, ""});
 
-    int k = 11;
-    cout << "charArr[]: ";
-    for (int i = 0; i < k; i++) {
-        cout << charArr[i] << " ";
-    }
-    cout << "\nweightArr[]: ";
-    for (int i = 0; i < k; i++) {
-        cout << weightArr[i] << " ";
-    }
-    cout << "\nleftArr[]: ";
-    for (int i = 0; i < k; i++) {
-        cout << leftArr[i] << " ";
-    }
-    cout << "\nrightArr[]: ";
-    for (int i = 0; i < k; i++) {
-        cout << rightArr[i] << " ";
-    }
-    cout << endl;
-
+    // DFS traversal: Going left adds 0 to string, going right adds 1
     while (!st.empty()) {
+        // Save and pop top node (starting with root)
         pair<int, string> node = st.top();
-        //cout << "STACK --> Index: " << node.first << " string: " << node.second << endl;
-        //cout << "left: " << weightArr[leftArr[node.first]] << " at index: " << leftArr[node.first] << "; and right: "
-            //<< weightArr[rightArr[node.first]] << " at index: " << rightArr[node.first] << endl;
-        //cout << endl;
-        //cout << "Traversed: " << traversed[node.first] << endl;
         st.pop();
 
+        // If you reach a leaf node, place the resulting string into proper index for code[] and continue
         if (leftArr[node.first] == -1 && rightArr[node.first] == -1) {
             codes[charArr[node.first] - 'a'] = node.second;
             continue;
         }
+
+        // Else, so long as a right or left child exists, push from left and/or right arrays and add to string
         if (rightArr[node.first] != -1) {
             st.push({rightArr[node.first], node.second + "1"});
         }
         if (leftArr[node.first] != -1) {
             st.push({leftArr[node.first], node.second + "0"});
         }
-
-
-        /*if (traversed[node.first]) {
-            if (node.first > 0) {
-                st.push({--node.first, ""});
-                continue;
-            }
-            continue;
-        }
-
-        traversed[node.first] = true;
-
-        int i = 0;
-        int j = root;
-
-        // If approached leaf, end
-        if (leftArr[node.first] == -1 && rightArr[node.first] == -1) {
-            // Assign to index containing correct letter
-            int holder = charArr[node.first];
-            codes[holder - 'a'] = node.second;
-
-            st.push({root, ""});
-            continue;
-        }
-
-        //else, if not traversed to left or right
-        if (rightArr[node.first] != -1) {
-            //st.push({rightArr[node.first], node.second + "0"}); //needs to be 3 ... the index of the wanted character at weightArr...
-            // ... so rightArr[node.first] == weightArr[3], and we want that index... basically, from right we want to find it in weightArr
-            while (rightArr[node.first] != weightArr[j]) {
-                j--;
-                //cout<< j <<endl;
-            }
-            st.push({j, node.second + "1"});
-        }
-        else {
-            while (leftArr[node.first] != weightArr[i]) {
-                i++;
-            }
-            st.push({i, node.second + "0"}); // needs to be 0
-        }*/
     }
 }
 
